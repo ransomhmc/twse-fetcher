@@ -1,0 +1,37 @@
+{
+  "name": "fetcher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node main.js"
+  },
+  "engines": {
+    "node": "7.5.0",
+	"npm": "4.1.2"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.5.1",
+    "babel-register": "^6.24.1",
+    "express": "^4.15.3",
+    "iconv-lite": "^0.4.17",
+    "redis": "^2.7.1",
+    "redis-server": "^1.1.0",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "node": "v7.5.0"
+        }
+      ]
+    ]
+  }
+}

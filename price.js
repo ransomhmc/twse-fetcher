@@ -7,6 +7,8 @@ import redis from 'redis';
 import express from 'express';
 import iconv from 'iconv-lite';
 
+var cors = require('cors')
+
 var options = {
       jar : true,
       baseUrl: 'http://163.29.17.179/stock/'
@@ -283,9 +285,10 @@ async function main()
 {
   const app = express()
 
+  app.use(cors())
   app.get('/', function (req, res) {
     var fs = require('fs');
-    var marky = require("marky-markdown")
+    var marky = require("marky-markdown-lite")
     var contents = fs.readFileSync('README.md', 'utf8');
     var html = marky(contents)
     res.send(html)
@@ -314,6 +317,11 @@ async function main()
       console.log(util.inspect(result));
       res.json(result);
     }
+  })
+
+  app.get('/plot', async function(req,res) {
+
+    res.sendfile('plot.html')
   })
 
   console.log('API: '+getTAIEX.name)

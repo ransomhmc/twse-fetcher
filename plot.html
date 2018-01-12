@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TWSE Plot!!!</title>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+</head>
+<body>
+	<script>
+		var API_SERVER = window.location.host
+		//var API_SERVER = '127.0.0.1:3000'
+		//var API_SERVER = 'twse-fetcher.hellorabbit.gq'
+
+		async function doPlot(stockID) {
+			$('body').append('<div id="'+stockID+'" style="width:600px;height:250px;"></div>')
+			var apiResult = await $.ajax({
+				url: 'http://' + API_SERVER + '/strategy_20day',
+				data: {stockID: stockID}
+			})
+
+			let TESTER = document.getElementById('tester');
+			let dataX = []
+			let dataY = []
+			let dataDate = []
+			for (idx in apiResult) {
+				if (apiResult[idx].y == 0)
+					continue
+				dataX.push(apiResult[idx].x*1000)
+				dataY.push(apiResult[idx].y*1000)
+				let dateString = apiResult[idx].date
+				dateString = dateString.substr(0,4)+'-'+dateString.substr(4,2)+'-'+dateString.substr(6,2)
+				console.log(dateString)
+				dataDate.push(dateString)
+			}
+
+			var trace1 = {
+				x: dataDate,
+				y: dataX,
+				type: 'scatter'
+			}
+			var trace2 = {
+				x: dataDate,
+				y: dataY,
+				type: 'scatter'
+			}
+
+			var data = [trace1, trace2];
+
+			var layout = {
+				xaxis: {
+					type: 'date',
+					title: 'Date'
+				},
+				yaxis: {
+					title: 'X,Y'
+				},
+				title:'Strategy: X,Y 20 days: '+stockID
+			}
+			Plotly.newPlot(stockID, data,layout);
+
+		}
+
+		async function plotAll() {
+			//await doPlot('3008')
+			await doPlot('2317')
+			//await doPlot('2330')
+			
+		}
+		plotAll()
+
+	</script>
+</body>
+</html>
+

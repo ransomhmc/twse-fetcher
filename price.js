@@ -154,8 +154,6 @@ async function getStock(stockIDList)
 
 async function getStock_day_avg(stockID,dateString)
 {
-  console.log('aaaa')
-
   let option = {
     uri : 'http://www.twse.com.tw/exchangeReport/STOCK_DAY_AVG',
     qs : {'response':'json','date':dateString,'stockNo':stockID},
@@ -290,7 +288,7 @@ async function main()
     var fs = require('fs');
     var marky = require("marky-markdown-lite")
     var contents = fs.readFileSync('README.md', 'utf8');
-    var html = marky(contents)
+    var html = marky(contents).html()
     res.send(html)
   })
 

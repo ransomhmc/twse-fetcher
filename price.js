@@ -284,7 +284,11 @@ async function main()
   const app = express()
 
   app.get('/', function (req, res) {
-    res.send('Hello World!')
+    var fs = require('fs');
+    var marky = require("marky-markdown")
+    var contents = fs.readFileSync('README.md', 'utf8');
+    var html = marky(contents)
+    res.send(html)
   })
 
   app.get('/price', async function(req, res) {

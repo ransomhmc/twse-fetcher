@@ -6,6 +6,7 @@ import RedisServer from 'redis-server';
 import redis from 'redis';
 import express from 'express';
 import iconv from 'iconv-lite';
+import sleep from "es7-sleep";
 
 var cors = require('cors')
 
@@ -214,7 +215,7 @@ async function strategy_20day(stockID)
 
   let today = new Date()
   let x = []
-  const window = 20
+  const avgWindow = 20
   const monthShifts = [-2,-1,0] //抓近三個月
   for (var key in monthShifts) 
   {
@@ -231,7 +232,7 @@ async function strategy_20day(stockID)
       day.date = dateString
       day.price = parseFloat(prices.data[i][1])
       day.taiex = parseFloat(taiex.data[i][4].replace(',',''))
-      day.x = (day.price - day.taiex) / (day.price + day.taiex) * -1
+      day.x = (day.price - day.taiex) / (day.price + day.taiex)
       day.y = 0.0
       x.push(day)
     }
@@ -241,11 +242,11 @@ async function strategy_20day(stockID)
   var subtotal = 0.0
   for (var i=0;i<x.length;i++) {
     subtotal += x[i].x
-    if (i >= window) {
-      subtotal -= x[i-window].x
+    if (i >= avgWindow) {
+      subtotal -= x[i-avgWindow].x
     }
-    if (i >= window-1)
-      x[i].y = subtotal / window
+    if (i >= avgWindow-1)
+      x[i].y = subtotal / avgWindow
     console.log(util.inspect(x[i]))
   }
   return x
@@ -324,18 +325,21 @@ async function main()
 
   console.log('API: '+getTAIEX.name)
   app.get('/'+getTAIEX.name, async function (req,res) {
+    await sleep(1000)
     let result = await getTAIEX(req.query.date)
     res.json(result.data)
   })
 
   console.log('API: '+getStock_day_avg.name)
   app.get('/'+getStock_day_avg.name, async function (req,res) {
+    await sleep(1000)
     let result = await getStock_day_avg(req.query.stockID,req.query.date)
     res.json(result.data)
   })
 
   console.log('API: '+strategy_20day.name)
   app.get('/'+strategy_20day.name, async function (req,res) {
+    await sleep(1000)
     let result = await strategy_20day(req.query.stockID)
     res.json(result)
   })

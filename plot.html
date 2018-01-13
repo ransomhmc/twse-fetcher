@@ -6,13 +6,17 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 </head>
 <body>
+	<div>
+		<input id="stockID" type="text">
+		<button id="btnPlot">plot</button>
+	</div>
 	<script>
 		var API_SERVER = window.location.host
 		//var API_SERVER = '127.0.0.1:3000'
 		//var API_SERVER = 'twse-fetcher.hellorabbit.gq'
 
 		async function doPlot(stockID) {
-			$('body').append('<div id="'+stockID+'" style="width:600px;height:250px;"></div>')
+			$('body').append('<div class="stock-plot" id="'+stockID+'" style="width:100%;height:600px;"></div>')
 			var apiResult = await $.ajax({
 				url: 'http://' + API_SERVER + '/strategy_20day',
 				data: {stockID: stockID}
@@ -25,8 +29,8 @@
 			for (idx in apiResult) {
 				if (apiResult[idx].y == 0)
 					continue
-				dataX.push(apiResult[idx].x*1000)
-				dataY.push(apiResult[idx].y*1000)
+				dataX.push(apiResult[idx].x)
+				dataY.push(apiResult[idx].y)
 				let dateString = apiResult[idx].date
 				dateString = dateString.substr(0,4)+'-'+dateString.substr(4,2)+'-'+dateString.substr(6,2)
 				console.log(dateString)
@@ -36,25 +40,27 @@
 			var trace1 = {
 				x: dataDate,
 				y: dataX,
-				type: 'scatter'
+				//type: 'scatter',
+				type: 'lines+markers',
+				name: 'A值:(股價-大盤)/(股價+大盤)'
 			}
 			var trace2 = {
 				x: dataDate,
 				y: dataY,
-				type: 'scatter'
+				//type: 'scatter',
+				type: 'lines+markers',
+				name: 'B值:前20天A值平均'
 			}
 
 			var data = [trace1, trace2];
 
 			var layout = {
 				xaxis: {
-					type: 'date',
-					title: 'Date'
+					type: 'date'
 				},
 				yaxis: {
-					title: 'X,Y'
 				},
-				title:'Strategy: X,Y 20 days: '+stockID
+				title:'個股相對大盤強弱指標: '+stockID
 			}
 			Plotly.newPlot(stockID, data,layout);
 
@@ -62,11 +68,18 @@
 
 		async function plotAll() {
 			//await doPlot('3008')
-			await doPlot('2317')
+			//await doPlot('2317')
 			//await doPlot('2330')
 			
 		}
-		plotAll()
+		$('#btnPlot').on('click',() => {
+			console.log('plot: stockID='+$('#stockID').val())
+			$(".stock-plot").remove()
+			doPlot($('#stockID').val())
+		})
+		//plotAll()
+
+
 
 	</script>
 </body>
